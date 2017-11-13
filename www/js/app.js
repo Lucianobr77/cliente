@@ -2604,8 +2604,19 @@ function setHomeCallback()
 function displayRestaurantResults(data , target_id)
 {	
 	//dump(data);
-	var htm='';	
-       
+	var htm='';
+        
+	var abertas = new Array();
+	var fechadas = new Array();
+
+	for(var i=0; i<data.length; i++) {
+		if (data[i].is_open == 'fechado')
+			fechadas.push(data[i]);
+		else
+			abertas.push(data[i]);
+	}
+	data = abertas.concat(fechadas);
+
     $.each( data, function( key, val ) {     
     	
     	 dump(val);
@@ -2620,72 +2631,66 @@ function displayRestaurantResults(data , target_id)
     	            
     	          htm+='</div>';
     	          
-    	          dump(val.services);
-    	          
-    	          if(!empty(val.services)){    	          	
-    	          	    $.each( val.services, function( key_service, val_services ) { 
-    	           	   	  htm+='<p class="center">'+val_services+' <i class="green-color ion-android-checkmark-circle"></i></p>';
-    	           	   });    	          	
-    	          }
     	              	          
     	          //htm+='<p class="center">'+val.payment_options.cod+'</p>';
-    	          if(!empty(val.payment_available)){ 
+    	          /*if(!empty(val.payment_available)){ 
     	          	 if(val.payment_available.length>0){
     	          	 	$.each( val.payment_available, function( key_pv, val_pv ) { 
     	          	 		 htm+='<p class="center">'+val_pv+'</p>';
     	          	 	});	
     	          	 }
-    	          }
-    	          
+    	          }*/
+    	          if ( val.offers.length>0){
+	    	           	   $.each( val.offers, function( key_offer, val_offer ) { 
+	    	           	   	  htm+='<p class="center"><i class="fa fa-tags" aria-hidden="true"></i> '+val_offer+'</p>';
+	    	           	   });
+	    	           }
     	          
     	     htm+='</ons-col>';
     	     
     	     htm+='<ons-col class="col-description border" width="65%">';
     	           htm+='<div>';
 	    	           htm+='<div class="rating-stars" data-score="'+val.ratings.ratings+'"></div>';
+		               htm+='<span class="notification '+val.tag_raw+' ">'+val.is_open+'</span>';
 	    	           htm+='<p class="restauran-title concat-text">'+val.restaurant_name+'</p>';
 	    	           htm+='<p class="concat-textx">'+val.cuisine+'</p>';
 	    	           
-	    	           if(!empty(val.distance)){
-	    	           	   htm+='<p>'+val.distance+'</p>';
-	    	           }
+	    	          dump(val.service);
+    	          
+    	          if(!empty(val.services)){
+    	          	  $.each( val.services, function( key_service, val_services ) { 
+    	           	   	  htm+='<class="center" style="font-size: 12px;"><i class="green-color ion-android-checkmark-circle"></i>'+val_services+' ';
+    	           	   });
+    	          }
 	    	           
-	    	           //if(val.service!=3){
-	    	           if(val.service==1 || val.service==2 || val.service==4 || val.service==5 ){
-	    	           	   if(!empty(val.delivery_estimation)){
-	    	           	      htm+='<p>'+val.delivery_estimation+'</p>';	    	           	   
-	    	           	   }
-	    	           	   if(!empty(val.delivery_distance)){
-	    	           	      htm+='<p>'+val.delivery_distance+'</p>';
-	    	           	   }
-	    	           }
-	    	           
-	    	           if ( val.offers.length>0){
-	    	           	   $.each( val.offers, function( key_offer, val_offer ) { 
-	    	           	   	  htm+='<p class="top10">'+val_offer+'</p>';
-	    	           	   });
-	    	           }
-	    	           
-	    	           htm+='<span class="notification '+val.tag_raw+' ">'+val.is_open+'</span>';
     	           htm+='</div>';
     	           
     	           htm+='<ons-row>';
-    	              htm+='<ons-col width="60%">';
-    	                 //if(val.service!=3){
-    	                 if(val.service==1 || val.service==2 || val.service==4 || val.service==5 ){
-    	                   htm+='<p class="p-small trn" data-trn-key="delivery">Delivery</p>';
+    	              htm+='<ons-col width="90%">';
+    	                 /*tempo de entrega*/
+					  if(val.service!=3){
+	    	           	   if(!empty(val.delivery_estimation)){
+	    	       htm+='<span class="p-small trn"><i class="ion-android-time" style="font-size: 15px;"></i> <b>'+val.delivery_estimation+'</b> | </span>';	
+	    	           	   }
+					    }
+					   /*Fim tempo de entrega*/
+		              /*Taxa de entrega*/
+    	             if(val.service!=3){
+    	                   htm+='<span class="p-small trn"><img src="./css/images/motorcycle.png" width="20" height="20";"></i> ';
     	                   if(!empty(val.delivery_fee)){
-    	                      htm+='<price>'+val.delivery_fee+'</price>';
+    	                      htm+='<b><price>'+val.delivery_fee+'</price></b></span>';
     	                   }
     	                 }
+    	             /*Fim Taxa de entrega*/
+		             /*Pedido minímo*/
+    	              htm+='<ons-col width="90%"">';
+					   	  if (!empty(val.minimum_order)){  
+						  htm+='<span class="p-small trn" data-trn-key="min_order">Min. Order</span>';
+    	                  htm+='<price> '+val.minimum_order+'</price>';
+						  }
     	              htm+='</ons-col>';
-    	              
-    	              if (!empty(val.minimum_order)){
-    	              htm+='<ons-col class="border-left">';
-    	                  htm+='<p class="p-small trn" data-trn-key="min_order">Min. Order</p>';
-    	                  htm+='<price>'+val.minimum_order+'</price>';
+					  /*Fim Pedido minímo*/
     	              htm+='</ons-col>';
-    	              }
     	              
     	           htm+='</ons-row>';
     	           
