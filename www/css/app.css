@@ -3,25 +3,44 @@ border:0px solid red;
 padding:8px;
 }
 
+.wrapper-box{
+border: 1px solid #00b279;
+/*padding: 8px;*/
+background: rgba(253, 253, 253, 0.8);
+margin: 5px 5px 12px 5px;
+border-radius: 8px;
+margin-top: 20%;
+}
+
 .wrapper-white{
-background:#fff;
+/*background:#fff;*/
 padding:15px 8px;
 }
 
 .center{
 text-align:center;
+/*padding: 8px;*/
 }
+
+.center2{
+text-align:center;
+border: 1px solid #00b279;
+background: rgba(253, 253, 253, 0.8);
+margin: 12px;
+border-radius: 8px;
+}
+
 .field-section{
 padding:8px;
 }
-.home-header,
+.home-header-inicio,
 .orange-header
 {
 max-width:100%;
 background:#f75d34;
 color:#fff;
-padding-top:10px;
-padding-bottom:15px;
+/*padding-top:10px;/*
+/*padding-bottom:15px;*/
 }
 .orange-header{
 padding-left:8px;
@@ -39,21 +58,6 @@ max-width:70%;
 background:#f75d34;
 color:#fff;
 border:none;
-}
-
-.indicar-restaurante{
-color:#fff;
-border:none;
-	height: 60px;
-text-align: -webkit-center;
-}
-
-.button.masterhub-btn{
-border-radius: 12px; 
-border: 0px solid #000; 
-text-shadow: 1px 1px 1px rgba(0,0,0,0.4); 
-background: #841011; 
-box-shadow: 1px -1px 10px 2px rgba(0,0,0,0.6);
 }
 
 .white,
@@ -234,9 +238,9 @@ address,
 .settings-list
 {
 line-height:1;
-font-size:14px;
+font-size:12px;
 color:#666;
-margin:8px 0;
+margin:0px 0;
 font-style:normal;
 }
 
@@ -560,6 +564,7 @@ color:#666;
 vertical-align:middle;
 font-size:14px;
 display:inline-block;
+float: inherit;
 }
 
 #page-orders .col-orders{
@@ -1070,7 +1075,7 @@ white-space: inherit;
 .page__background.page--getsettings__background
 {
 /*background:#101316;*/
-background:url("images/location-banner.jpg") no-repeat center center;
+background:url("images/banner.jpg") no-repeat center center;
 background-size:cover;
 }
 .greybg{
@@ -1117,8 +1122,8 @@ font-size:30px;
  display:none;
 }
 .search-banner{
-background:url("images/location-banner.jpg") no-repeat center center;
-background-size:cover;
+background:url("images/banner.png") no-repeat center center;
+/**/
 min-height:180px;
 }
 
@@ -1190,7 +1195,7 @@ top:auto !important;
 min-height:150px;
 width:100%;
 position:relative;
-background:url("images/location-banner.jpg") no-repeat center center;
+background:url("images/b1.png") no-repeat center center;
 background-size:cover;
 }
 .menu-header .inner{
@@ -1235,4 +1240,58 @@ padding:0 0 5px;
 font-size: 11px;
 line-height: inherit;
 padding: 5px;
+}
+
+/*MODIFICADO*/
+
+.notification{
+  right: 12px;
+  font-size: 12px;
+  float: right;
+}
+
+/*icones categoria*/
+.imgcategoria {
+width: 32px;
+height: 32px;
+vertical-align: middle;
+}
+
+.page__background.page--mybg__background{
+background:url("images/b1.png") no-repeat center center;
+background-size:cover;
+}
+
+.page__background.page--mybg2__background{
+background:url("images/b2.png") no-repeat center center;
+background-size:cover;
+}
+
+.center_menu{
+text-align:center;
+padding: 0px;
+}
+
+.indicar-restaurante{
+float: left;
+
+border-radius: 50px;
+width: 40px;
+background: #d4d4d4;
+padding: 20px;
+text-align: center;
+}
+
+.texto1-indicacao{
+margin-top: 13px;
+margin-left: 100px;
+color: #f75d34;
+font-size: 20px;
+}
+
+.texto2-indicacao{
+margin-top: -10px;
+margin-left: 100px;
+color: #4a4848;
+font-size: 13px;
 }

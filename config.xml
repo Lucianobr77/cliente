@@ -2,15 +2,15 @@
 <widget xmlns = "http://www.w3.org/ns/widgets"
     xmlns:gap = "http://phonegap.com/ns/1.0"
     xmlns:android = "http://schemas.android.com/apk/res/android"
-    id        = "kmrs.mobile.app"
-    versionCode = "21"
-    version   = "2.1">
-    <name>Karenderia Mobile App</name>
+    id        = "soumaisfood_NOVO.cliente.app"
+    versionCode = "2.2.0"
+    version   = "2.2.0">
+     <name>Sou + Food TESTE</name>
     <description>
-        Karenderia mobile app version
+        Sou + Food TESTE
     </description>
-    <author email="bastikikang@gmail.com" href="http://cordova.io">
-        bastisapp.com
+    <author email="contato@soumaisfood.com.br" href="http://cordova.io">
+        soumaisfood.com.br
     </author>
             
     <content src="index.html" />
@@ -24,7 +24,7 @@
       <param name="SENDER_ID" value="" />
     </gap:plugin>
     
-    <gap:plugin name="com.paypal.cordova.mobilesdk" source="npm"  />            	
+                	
     <gap:plugin name="cordova-plugin-device" source="npm" />		
 	<gap:plugin name="cordova-plugin-inappbrowser" source="npm" />		
 	<gap:plugin name="cordova-plugin-splashscreen" source="npm" />	
@@ -34,15 +34,17 @@
 	<gap:plugin name="cordova-plugin-request-location-accuracy" source="npm"  spec="2.2.0" />	
 	<gap:plugin name="cordova-plugin-x-toast" source="npm" spec="2.6.0" />	
 	
-	<gap:plugin spec="https://github.com/razorpay/razorpay-cordova.git" source="git" />
+	
 	<gap:plugin name="cordova-plugin-media" source="npm" spec="3.0.0" />	
 	<gap:plugin name="cordova.plugins.diagnostic" source="npm" spec="3.4.2" />	
+	
+	<gap:plugin name="onesignal-cordova-plugin" spec="2.1.1" source="npm" />
 		
 	<gap:plugin name="cordova-plugin-googlemaps-plus" source="npm" >
-       <param name="API_KEY_FOR_ANDROID" value="" />
-       <param name="API_KEY_FOR_IOS" value="" />
-       <param name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="Karenderia wants to use your location" />
-       <param name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="Karenderia want to always use your location" />
+       <param name="API_KEY_FOR_ANDROID" value="AIzaSyAyXV9JX1jiIJGqnHg4DsBpy7AVFyQa9Ug" />
+       <param name="API_KEY_FOR_IOS" value="AIzaSyAyXV9JX1jiIJGqnHg4DsBpy7AVFyQa9Ug" />
+       <param name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="O Sou + Food quer usar sua localização" />
+       <param name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="O Sou + Food quer sempre usar sua localização" />
     </gap:plugin>
     
     <gap:plugin name="cordova-plugin-buildinfo" source="npm" spec="1.1.0"  />
@@ -55,11 +57,11 @@
     <platform name="ios" /> 
 		
     <gap:config-file platform="ios" target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
-        <string>Karenderia want to always use your location</string>
+        <string>O Sou + Food quer sempre usar sua localização</string>
     </gap:config-file>
         
     <gap:config-file platform="ios" target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
-        <string>Karenderia wants to use your location</string>
+        <string>O Sou + Food quer usar sua localização</string>
     </gap:config-file>	
 			
 	<preference name="AutoHideSplashScreen" value="false" />  	
@@ -83,7 +85,7 @@
     <gap:plugin spec="https://github.com/danwilson/google-analytics-plugin.git" source="git" />       
     
     <gap:config-file platform="ios" parent="NSPhotoLibraryUsageDescription" overwrite="true"> 
-      <string>Karenderia would like to access your photo</string> 
+      <string>O Sou + Food gostaria de acessar suas fotos</string> 
     </gap:config-file>    
     
 	<platform name="android">

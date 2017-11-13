@@ -443,29 +443,6 @@ function tplReviews(rating, client_name, review, date_review)
 	return htm;
 }
 
-function tplSuggestions(nome_empresa, cidade, votos, date_created)
-{
-   var htm='';
-   htm+='<ons-list class="review-list">';
-	  htm+='<ons-list-item modifier="tappable" class="list-item-container">';
-	     htm+='<ons-row class="row"> ';
-		     htm+='<ons-col class="col-image" width="90px">';
-			   htm+='<ons-icon icon="fa-user" class="icon-user"></ons-icon>';
-			 htm+='</ons-col>';
-			 
-			 htm+='<ons-col class="col-description">';
-			   htm+='<p class="small-font-dim">'+nome_empresa+'</p>';
-			   htm+='<p class="small-font-dim">'+cidade+'</p>';
-			   htm+='<p class="small-font-dim">'+votos+'</p>';
-			   htm+='<p class="small-font-dim">'+date_created+'</p>';
-			 htm+='</ons-col>';
-			 
-		 htm+='</ons-row>';
-	  htm+='</ons-list-item>';
-	htm+='</ons-list>';
-	return htm;
-}
-
 function customFields(name, placeholder)
 {
 	var htm='';	
@@ -510,3 +487,28 @@ function ContactNumberFields()
       
 	return htm;
 }
+
+/*modificado*/
+function tplSuggestions(nome_empresa, cidade, votos, date_created)
+{
+   var htm='';
+   htm+='<ons-list class="review-list">';
+	  htm+='<ons-list-item modifier="tappable" class="list-item-container">';
+	     htm+='<ons-row class="row"> ';
+		     htm+='<ons-col class="col-image" width="90px">';
+			   htm+='<ons-icon icon="fa-user" class="icon-user"></ons-icon>';
+			 htm+='</ons-col>';
+			 
+			 htm+='<ons-col class="col-description">';
+			   htm+='<p class="small-font-dim">'+nome_empresa+'</p>';
+			   htm+='<p class="small-font-dim">'+cidade+'</p>';
+			   htm+='<p class="small-font-dim">'+votos+'</p>';
+			   htm+='<p class="small-font-dim">'+date_created+'</p>';
+			 htm+='</ons-col>';
+			 
+		 htm+='</ons-row>';
+	  htm+='</ons-list-item>';
+	htm+='</ons-list>';
+	return htm;
+}
+/*fim*/

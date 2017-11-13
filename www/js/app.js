@@ -36,7 +36,18 @@ var push;
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
-function onDeviceReady() {    
+function onDeviceReady() {
+	
+	/*MODIFICADO*/
+var notificationOpenedCallback = function(jsonData) {
+    console.log('notificationOpenedCallback: ' + JSON.stringify(jsonData));
+  };
+
+  window.plugins.OneSignal
+    .startInit("3e5eb931-c6f2-4ff1-83d8-506357fb9193")
+    .handleNotificationOpened(notificationOpenedCallback)
+    .endInit();
+/*FIM*/
 	    					
 	navigator.splashscreen.hide();
 	
@@ -422,6 +433,12 @@ document.addEventListener("pageinit", function(e) {
 	     $(".order_change").attr("placeholder", getTrans('change? For how much?','order_change') );	     
 		 break;
 		 
+		 /*MODIFICADO*/
+		  case "page-favoritos":
+		  callAjax('browseFavoritos',"client_token="+getStorage("client_token"));
+		  break;
+		 /*FIM*/
+			
 	  case "page-addressbook-details":
 	    translatePage();
 	    translateValidationForm();
@@ -524,6 +541,14 @@ document.addEventListener("pageinit", function(e) {
 								
 		break;
 		
+		/* Modificação Pagina Personalizada */
+		case "carregarPagina-page":	
+		var pagina=getStorage("pagina");
+		callAjax("Pagina","id="+pagina);
+			
+			break;
+		/* FIM da Modificação Pagina Personalizada */
+			
 		case "page-home":		    
 		    
 		    translatePage();
@@ -601,6 +626,12 @@ document.addEventListener("pageinit", function(e) {
 		    setTrackView('homepage');
 			
 		break;
+			
+		/* Modificação Pagina Personalizada */
+		case "page-Pagina":
+			
+		  break;
+		/* FIM da Modificação Pagina Personalizada */
 		
 		case "page-filter-options":
 		  callAjax('cuisineList','');
@@ -1061,7 +1092,13 @@ function callAjax(action,params)
 				$(".result-msg").text(data.details.total+" "+getTrans("Restaurant found",'restaurant_found') );
 								
 				break;
-				
+				/*MODIFICADO*/	
+			    case "browseFavoritos":
+				   displayFavoritosResults( data.details.data ,'browse-favoritos');
+				   //$(".result-msg").text(data.details.total+" Restaurant found");
+				   $(".result-msg").text(data.details.total+" "+ getTrans("Favorito(s) Encontrado(s)",'restaurant_found')  );
+				 break;
+				/*FIM*/
 				case "MenuCategory":			
 				/*save merchant logo*/								
 				setStorage("merchant_logo",data.details.logo);
@@ -1408,7 +1445,9 @@ function callAjax(action,params)
 			       }			 
 			       
 			        translateValidationForm();
-			   	   			   	   
+					/*MODIFICADO*/
+					reloadCart();
+			   	    /*FIM*/
 			   	   displayPaymentOptions(data);
 			   	   
 			   	   $(".cod_change_required").val( data.details.cod_change_required);
@@ -2619,7 +2658,7 @@ function displayRestaurantResults(data , target_id)
 
     $.each( data, function( key, val ) {     
     	
-    	 dump(val);
+    	 
     	 
     	 //htm+='<ons-list-item modifier="tappable" class="list-item-container" onclick="loadRestaurantCategory('+val.merchant_id+');" >';
     	 htm+='<ons-row class="row" onclick="loadRestaurantCategory('+val.merchant_id+');" >';    	 
@@ -2650,8 +2689,8 @@ function displayRestaurantResults(data , target_id)
     	     
     	     htm+='<ons-col class="col-description border" width="65%">';
     	           htm+='<div>';
-	    	           htm+='<div class="rating-stars" data-score="'+val.ratings.ratings+'"></div>';
 		               htm+='<span class="notification '+val.tag_raw+' ">'+val.is_open+'</span>';
+	    	           htm+='<div class="rating-stars" data-score="'+val.ratings.ratings+'"></div>';
 	    	           htm+='<p class="restauran-title concat-text">'+val.restaurant_name+'</p>';
 	    	           htm+='<p class="concat-textx">'+val.cuisine+'</p>';
 	    	           
@@ -2665,8 +2704,8 @@ function displayRestaurantResults(data , target_id)
 	    	           
     	           htm+='</div>';
     	           
-    	           htm+='<ons-row>';
-    	              htm+='<ons-col width="90%">';
+    	           /*htm+='<ons-row>';
+    	              htm+='<ons-col width="90%">';*/
     	                 /*tempo de entrega*/
 					  if(val.service!=3){
 	    	           	   if(!empty(val.delivery_estimation)){
@@ -2692,7 +2731,7 @@ function displayRestaurantResults(data , target_id)
 					  /*Fim Pedido minímo*/
     	              htm+='</ons-col>';
     	              
-    	           htm+='</ons-row>';
+    	          /* htm+='</ons-row>';*/
     	           
     	     htm+='</ons-col>';
     	     
@@ -2818,6 +2857,11 @@ function cuisineResults(data)
 function menuCategoryResult(data)
 {
 	$("#menucategory-page .restauran-title").text(data.restaurant_name);
+	/*MODIFICADO*/
+	$("#menucategory-page .estabelecimento-header2").attr("style",'background-image: url('+upload_url+''+data.merchant_bg+'); background-size: 108%; padding-bottom: 42px; box-sizing: border-box; position: fixed; top: 0px; left: 0px; right: 0px;');
+	$("#menucategory-page .estabelecimento-header").attr("style",'background-image: url('+upload_url+''+data.merchant_bg+'); background-size: cover; box-sizing: border-box; position: relative; top: -42px; left: 0px; right: 0px; height: 165px; z-index: -1;');
+	/*Fim*/
+	
 	$("#menucategory-page .rating-stars").attr("data-score",data.ratings.ratings);
 	initRating();
 	$("#menucategory-page .logo-wrap").html('<img src="'+data.logo+'" />')
@@ -2842,8 +2886,14 @@ function menuCategoryResult(data)
 	} else {
 		toastMsg(  getTrans("This restaurant has not published their menu yet.",'this_restaurant_no_menu') );
 	}	
-}
 
+/*MODIFICADO*/
+//Chamo o metodo verificaFavorito (APP MENU BAR)
+     $(document).ready(function() { 
+	  verificaFavorito();
+     });
+}
+/*FIM*/
 function loadmenu(cat_id,mtid)
 {			       
 	
@@ -3005,7 +3055,7 @@ actions='"loadItemDetails('+ "'"+val.item_id+"'," +  "'"+data.merchant_id+"'," +
                 }
                                 
                 if (val.not_available==2){
-                	html+='<p>item not available</p>';
+                	html+='<p><b>item não disponível</b></p>';/*MODIFICADO*/
                 }
                 
              html+='</ons-col>';
@@ -6296,8 +6346,8 @@ function toastMsg( message )
 function isDebug()
 {	
 	//on/off
-	//return true;
 	return true;
+	//return false;
 }
 
 var rzr_successCallback = function(payment_id) {
@@ -8469,7 +8519,7 @@ var lazyLoadSearch = {
   	
   	search_total = getStorage("search_total");
   	if(!empty(search_total)){
-  		$(".result-msg").text(search_total+" "+getTrans("Restaurant found",'restaurant_found') );
+  		$(".result-msg").text(getTrans("Restaurant found",'restaurant_found') );
   	}  	  	
     var $element = $('<div id="results-'+index+'">'+spinner+'</div>');     
     getSearchMerchant(index);   
@@ -9000,113 +9050,4 @@ function setTrackView(pagename , campaign_details )
 	   	  }
    	  }
    }
-}
-
-function loadMoreSuggestion()
-{
-	var page = sNavigator.getCurrentPage();		
-	if ( page.name=="votacao.html"){		
-	    callAjax("Suggestion",params);	             	       
-		return;
-	}
-	
-	var options = {
-      animation: 'slide',
-      onTransitionEnd: function() { 						      	  
-      	     'page-suggestion';
-	      callAjax("Suggestion",params);	             	       
-      } 
-    };   
-    sNavigator.pushPage("votacao.html", options);		 	
-}
-
-function displaySuggestion(data)
-{
-	var htm='';
-	$.each( data, function( key, val ) {        		  
-		htm+=tplSugestoes(val.nome_empresa, val.cidade, val.votos, val.date_created );
-	});	
-	createElement('suggestion-list-scroller',htm);
-	initRating();
-}
-
-function showSuggestionForm()
-{
-	if (isLogin()){
-	var options = {
-      animation: 'none',
-      onTransitionEnd: function() { 						      	  
-      	  
-      	     'page-addsuggestions';
-      	  
-      	  translatePage();
-      	  $(".nome_empresa").attr("placeholder", getTrans('O Nome da Empresa','nome_da_empresa') );
-          $(".cidade").attr("placeholder", getTrans('Cidade','cidade') ); 
-          $(".telefone").attr("placeholder", getTrans('Telefone','telefone') );     
-          $(".contato").attr("placeholder", getTrans('Contato','contato') );     
-          translateValidationForm();      
-          
-          	  
-      }                   
-    };   
-    sNavigator.pushPage("indicacao.html", options);	
-	
-} else {
-		menu.setMainPage('prelogin.html', {closeMenu: true})
-	}
-	
-}
-
-function showSuggestion2Form()
-{  
-	if (isLogin()){
-	var options = {
-      animation: 'none',
-      onTransitionEnd: function() { 						      	  
-      	  
-      	     'page-addsuggestions';
-      	  
-      	  translatePage();
-      	  $(".nome_empresa").attr("placeholder", getTrans('o Nome da Empresa','nome_da_empresa') );
-          $(".cidade").attr("placeholder", getTrans('Cidade','cidade') ); 
-          $(".telefone").attr("placeholder", getTrans('Telefone','telefone') );     
-          $(".contato").attr("placeholder", getTrans('Contato','contato') );     
-          translateValidationForm();      
-          
-          	  
-      }                   
-    }; 
-	
-    sNavigator.pushPage("suggestion.html", options);
-	
-	} else {
-		menu.setMainPage('prelogin.html', {closeMenu: true})
-	}
-}
-
-
-function addSuggestion()
-{
-	if (isLogin()){
-	
-	$.validate({ 	
-	    form : '#frm-addsuggestion',    
-	    borderColorOnError:"#FF0000",
-	    onError : function() { 
-			return;
-		},	    
-	    onSuccess : function() {     	      
-	      var params = $( "#frm-addsuggestion").serialize();	      
-	      params+="&client_token="+ getStorage("client_token");
-			
-	      callAjax("addSuggestion",params);
-			return;
-			
-	    }  
-	});
-		
-	} else {
-		menu.setMainPage('prelogin.html', {closeMenu: true})
-	}
-	
 }

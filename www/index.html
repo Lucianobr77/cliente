@@ -48,6 +48,7 @@
 
 <link href="lib/intel/build/css/intlTelInput.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="lib/intel/build/js/intlTelInput.js"></script>
+<script type="text/javascript" src="js/uaidatapersonalizacoes.js"></script><!--MODIFICADO-->
 
 <script src="js/config.js?ver=1.0"></script>
 <script src="js/paypal.js?ver=1.0"></script>
@@ -56,6 +57,7 @@
 <script src="js/tpl.js?ver=1.0"></script>
 <script src="js/countries.js?ver=1.0"></script>
 <script src="js/app.js?ver=1.0"></script>
+<script src="js/sugestao.js"></script>
 </head>
 <body>
 
@@ -116,17 +118,22 @@
     <ons-list-item onclick="setHome();" class="bottom-menu-item" >
       <ons-icon icon="ion-ios-home-outline"></ons-icon> <span class="trn" data-trn-key="home">Home</span>
     </ons-list-item>
-    
-    <ons-list-item onclick="initBrowseMerchant();" class="bottom-menu-item">
+    <!--MODIFICADO-->
+    <!--ons-list-item onclick="initBrowseMerchant();" class="bottom-menu-item">
       <ons-icon icon="ion-android-menu"></ons-icon> 
       <span class="trn" data-trn-key="browse_resto">Browse Restaurant</span>
-    </ons-list-item>
-    
+    </ons-list-item-->
+    <!--FIM-->
     <ons-list-item onclick="showProfile();" class="bottom-menu-item">
       <ons-icon icon="ion-android-contact"></ons-icon> 
       <span class="trn" data-trn-key="profile">Profile</span>
-    </ons-list-item>    
-    
+    </ons-list-item>
+	<!--MODIFICADO-->
+	<ons-list-item onclick="menu.setMainPage('favoritos.html', {closeMenu: true})" class="bottom-menu-item">
+      <ons-icon icon="ion-android-favorite"></ons-icon> 
+      <span class="trn" data-trn-key="Favortios">Favoritos</span>
+    </ons-list-item>
+    <!--FIM-->
     <ons-list-item onclick="showOrders();" class="bottom-menu-item">
       <ons-icon icon="ion-android-restaurant"></ons-icon> 
       <span class="trn" data-trn-key="orders">Orders</span>
@@ -160,7 +167,7 @@
 
 <script type="text/ons-template" id="home.html">
 <ons-navigator title="Navigator" var="kNavigator">
-  <ons-page id="page-home" on-device-backbutton="exitKApp()" sliding-menu-ignore="true" >
+  <ons-page id="page-home" on-device-backbutton="backtoHome()" sliding-menu-ignore="true" modifier="mybg" >
         
     <ons-toolbar>
       <div class="left">
@@ -175,7 +182,9 @@
          <img src="css/images/banner.png" alt="" title="">
     </div> 
        
-    <div class="home-page wrapper center">       
+    <div class="home-page wrapper center">
+	<h4 class="trn" style="color: #fff; text-shadow: 0 0 20px #000000;" data-trn-key="Welcome!_Where_should_we_deliver_your_order?">Welcome! Where should we deliver your order?</h4>
+	<div class="home-page wrapper-box center">       
        <h4 class="trn" data-trn-key="enter_your_location">Enter your location</h4>
        
        <section class="field-section">
@@ -189,12 +198,12 @@
          <span class="trn" data-trn-key="use_my_location">Use my current location</span>
        </button>       
        </div>
-       
+       </div>
         <button class="button green-btn button--large" onclick="searchMerchant();">
 	      <span class="trn" data-trn-key="search_restaurant">Search Restaurant</span>    	      
 	      <div class="search-btn"><ons-icon icon="fa-chevron-right"></ons-icon></div>
 	   </button>
-	   	   	  
+	   
     </div>      
 
     <div class="wrapper no-connection">
@@ -209,10 +218,12 @@
     </DIV>
     
     <DIV class="search_by_location">
-       <div class="search-banner"></div>
+       <div class="home-header">
+         <img src="css/images/banner.png" alt="" title="">
+    </div> 
        
        <div class="home-page wrapper center">       
-       <h4 class="trn" data-trn-key="order_food_online">Order food online from 1000+ restaurants!</h4>
+       <h4 class="trn" style="color: #fff;text-shadow: 0 0 20px #000000;padding-top: 30px;padding-bottom: 50px;" data-trn-key="order_food_online">Order food online from 1000+ restaurants!</h4>
        
        <input type="hidden" name="state_id" id="state_id" class="state_id" >
        <input type="hidden" name="city_id" id="city_id" class="city_id" >
@@ -252,21 +263,79 @@
   </ons-page>
 </ons-navigator>  
 </script>
+	
+<script type="text/ons-template" id="Pagina-Personalizada.html"> 
+<ons-navigator title="Navigator" var="sNavigator"> 
+<ons-page id="carregarPagina-page">
+<ons-toolbar>     
+   
+    <div class="left">
+	<div class="left"><ons-back-button></ons-back-button></div>
+     <ons-toolbar-button>
+        
+     </ons-toolbar-button>        
+    </div>      
+      
+   </ons-toolbar>  
+		  <div id="pagina-personalizada"></div>
 
-<script type="text/ons-template" id="suggestion.html"> 
-<ons-page id="page-addsuggestions" class="onsen-display" style="background: url('background-1.jpg');">
+</ons-page>
+</ons-navigator>
+</script>
 
+<script type="text/ons-template" id="Pagina-Indicacao.html"> 
+<ons-navigator id="indicacao-page" title="Navigator" var="sNavigator"> 
+<ons-page id="page-indicacao" ng-controller="TabbarController">
   <ons-toolbar>     
    
-    <div class="left"><ons-back-button></ons-back-button></div>
+    <div class="left">
+     <ons-toolbar-button onclick="setHome();">
+        <ons-icon icon="ion-ios-arrow-thin-left" style="font-size: 30px;"></ons-icon>
+     </ons-toolbar-button>        
+    </div> 
      
-     <div class="center white">Voltar</div>
+     <div class="center white">{{title}}</div>
      
+      
    </ons-toolbar>
 
-</br></br>
-     <div class="center white trn" data-trn-key="add_suggestions">Enviar minha Sugest�o!</div>                 
+  <ons-tabbar swipeable position="auto">
+  
+    <ons-tab page="votacao.html" label="Vote" icon="fa-question-circle" active-icon="fa-question-circle-o">
+	
+    </ons-tab>
+    <ons-tab page="indicacao.html" label="Indique" icon="fa-line-chart" active-icon="fa-line-chart">
+    </ons-tab>
+  </ons-tabbar>
+      <p style="text-align: center;">
+      Votação de estabelecimentos já cadastrados no sistema.
+    </p>
+</ons-page>
+</ons-navigator>
+</script>
 
+<script type="text/ons-template" id="votacao.html"> 
+<ons-page id="page-suggestion" class="onsen-display">
+   <ons-toolbar>        
+     <div class="left"><ons-back-button></ons-back-button></div> 
+     <div class="center white"><span id="search-text" class="trn" data-trn-key="reviews">Suggestions</span></div>                         
+     <div class="right">        
+         <ons-toolbar-button onclick="showSuggestion2Form()" ><ons-icon icon="ion-plus-round"></ons-toolbar-button>
+     </div>
+   </ons-toolbar>      
+   
+   <ons-scroller id="suggestion-list-scroller">    
+   </ons-scroller>
+  
+</ons-page>
+</script>   
+
+
+<script type="text/ons-template" id="indicacao.html"> 
+<ons-page id="page-addsuggestions" class="onsen-display">
+</br></br>
+     <div class="center white trn" data-trn-key="add_suggestions">Enviar minha Sugestão!</div>                 
+    
    <form id="frm-addsuggestion" class="frm-addsuggestion" method="post">   
    <div class="wrapper">
    
@@ -290,8 +359,8 @@
       placeholder="Telefone da Empresa" value="">
       </div>
 </br>
-   <button class="button masterhub-btn button--large trn" onclick="addSuggestion();" data-trn-key="publish_suggestion">
-	Enviar minha Sugest�o
+   <button class="button green-btn button--large trn" onclick="addSuggestion();" data-trn-key="publish_suggestion">
+	Enviar minha Sugestão
 	<div class="search-btn"><ons-icon icon="ion-checkmark-round"></ons-icon></div>
    </button>
    
@@ -300,6 +369,62 @@
    
 </ons-page>
 </script>  
+
+<script type="text/ons-template" id="suggestion.html"> 
+<ons-page id="page-addsuggestions" class="onsen-display" modifier="mybg" >
+
+  <ons-toolbar>     
+   
+    <div class="left">
+	<div class="left"><ons-back-button></ons-back-button></div>
+     <ons-toolbar-button>
+        
+     </ons-toolbar-button>        
+    </div>      
+      
+   </ons-toolbar>
+
+</br></br>
+     <div class="home-page wrapper center">
+     <h4 class="trn" style="color: #fff; text-shadow: 0 0 20px #000000;" data-trn-key="add_suggestions">Enviar minha Sugestão!</h4>
+	 
+<div class="home-page wrapper-box center">
+   <form id="frm-addsuggestion" class="frm-addsuggestion" method="post">   
+   <div class="wrapper">
+      
+      <div class="field-wrapper">
+      <input type="text" name="nome_empresa"  class="review text-input text-input--underbar has_validation" 
+      placeholder="Nome do restaurante" value="" data-validation="required" data-validation-error-msg="este campo precisa ser preenchido!" >
+      </div>
+	  
+      <div class="field-wrapper">
+      <input type="text" name="cidade"  class="review text-input text-input--underbar has_validation" 
+      placeholder="Cidade" value="" data-validation="required" data-validation-error-msg="este campo precisa ser preenchido!" >
+      </div>
+
+      <div class="field-wrapper">
+      <input type="text" name="contato"  class="review text-input text-input--underbar" 
+      placeholder="Contato no restautante" value="">
+      </div>
+
+      <div class="field-wrapper">
+      <input type="text" name="telefone"  class="review text-input text-input--underbar" 
+      placeholder="Telefone do restaurante" value="">
+      </div>
+	  
+</br>
+   <button class="button green-btn button--large trn" onclick="addSuggestion();" data-trn-key="publish_suggestion">
+	Enviar minha Sugestão
+	<div class="search-btn"><ons-icon icon="ion-checkmark-round"></ons-icon></div>
+   </button>
+   
+   </div>
+   </form>
+   </div>
+   </div>
+</ons-page>
+</script>  
+
 
 <script type="text/ons-template" id="searchResults.html">   
 <ons-navigator title="Navigator" var="sNavigator"> 
@@ -328,19 +453,19 @@
        </ons-list-item>
     </ons-list>
    
-  <div class="indicar-restaurante">
-  
-  <div style="margin-top: 5px;">N�o encontrou o que queria?</div> 
-  
-  <ons-button style="border-radius:9px; background-color: #731414; line-height:21px; font-size: 23px; margin-top: 5px; border: 1px solid currentColor;" onclick="showSuggestion2Form()" >
-  
-  Sugerir Estabelecimento
-	
-	</ons-button>
    </div>
+   <ons-button onclick="showSuggestion2Form()" class="ng-isolate-scope button effeckt-button slide-left" style="width: 100%; background: none; color: #000;"><span class="label ons-button-inner">
+  <div class="indicar-restaurante">
+  <i class="ion-android-restaurant" style="font-size: 35px;color: #f75d34;"></i>
+   </div>
+  <div class="texto1-indicacao"><b>Não encontrou?</b></div>
+  <div class="texto2-indicacao">Recomende um restaurante para nós!</div>
   
+ </ons-button>
+    
 </ons-page>
-</ons-navigator> 
+</ons-navigator>
+
 </script>
 
 
@@ -378,15 +503,17 @@
      <div class="left"><ons-back-button></ons-back-button></div>     
      <div class="center white"><span id="search-text" class="trn" data-trn-key="menu" >Menu</span></div>           
      
-     <div class="right">     
+     <div class="right">
+	     
+		 <ons-toolbar-button>
+           <img src="images/icons/favoritar.png" id="imgfavorito" onclick='addFavorito()' class="cart ng-scope ons-icon fa-shopping-cart fa fa-lg" width="24px" height="24px">
+        </ons-toolbar-button>
+	     
          <ons-toolbar-button onclick="showCart();" >         
            <div class="notification cart-num" >0</div>
            <ons-icon icon="fa-shopping-cart" class="cart">
          </ons-toolbar-button>
-         
-         <ons-toolbar-button onclick="showMenu(this);">
-           <ons-icon icon="ion-android-more-vertical" size="30px"></ons-icon>
-        </ons-toolbar-button>     
+              
          
      </div>
            
@@ -411,7 +538,18 @@
         </div>
     </div>    
    </div>
-   
+   <!--MODIFICADO-->
+   <div class="wrapper center_menu" style="background-color: #f75d34;">
+		<ons-row>
+			<ons-col>
+				<div onclick="loadPageMerchantInfo();" style="color: #fff; font-size: 16px;border: 1px dotted #fff; padding: 5px;"><ons-icon icon="ion-ios-list-outline" style="margin-right: 6px; line-height: 2px; color: #fff;"></ons-icon>Informações</div>
+			</ons-col>
+			<ons-col>
+				<div onclick="loadMoreReviews();" style="color: #fff; font-size: 16px;border: 1px dotted #fff; padding: 5px;"><ons-icon icon="ion-ios-star-outline" style="margin-right: 6px; line-height: 2px; color: #fff;"></ons-icon>Avaliações</div>
+			</ons-col>
+		</ons-row>
+	</div>
+	<!--FIM-->
    <ons-scroller id="category-list"> 
       <ons-list id="lazy-parent" >
 	      <ons-list-item ons-lazy-repeat="lazyFoodCategory" modifier="tappable" class="list-item-container lazy-list">      
@@ -549,7 +687,8 @@
    placeholder="Delivery Time" value="">
    </div>
    
-   
+   <!--MODIFICADO-->
+   <div style="display:none;">
    <ons-list-item modifier="tappable" class="delivery_asap_wrap">
        <label class="checkbox">
 		  <input type="checkbox" name="delivery_asap" value="1" class="delivery_asap">
@@ -559,18 +698,21 @@
 		  </span>
 		</label>
 	</ons-list-item>
-   
+	</div>
+   <!--FIM-->
    <div class="wrapper">
      <p class="p-normal pts_earn_label"></p>
    </div>
       
    
    <ons-list>       
-   
+   <!--MODIFICADO-->
+   <div style="display:none;">
        <ons-list-item modifier="chevron" onclick="showTip();" class="tip_amount_wrap" > 
        <span class="trn tip_amount" data-trn-key="tip_amount">Tip Amount</span>       
        </ons-list-item>    
-       
+   </div>
+   <!--FIM-->    
        <ons-list-item modifier="chevron" onclick="showChangeAddressPage();" class="change_address_wrap" > 
        <span class="trn" data-trn-key="change_your_address">Change your address here</span>       
        </ons-list-item>    
@@ -1335,7 +1477,7 @@
 
 <script type="text/ons-template" id="prelogin.html">   
 <ons-navigator title="Navigator" var="sNavigator"> 
-<ons-page id="page-prelogin" on-device-backbutton="backtoHome()" >
+<ons-page id="page-prelogin" on-device-backbutton="backtoHome()" modifier="mybg2" >
    <ons-toolbar>     
    
     <div class="left">
@@ -1353,7 +1495,7 @@
    
     <div class="home-header">
       <img src="css/images/banner.png" alt="" title="">
-      <p class="center trn" data-trn-key="please_log_or_reg">Please log in or register to continue with<br>your order</p>
+      <p class="center trn" style="color: #fff; text-shadow: 0 0 20px #000000;" data-trn-key="please_log_or_reg">Please log in or register to continue with<br>your order</p>
     </div> 
 
    <div class="wrapper center wrapper-white fb-login-wrap">   
@@ -1368,7 +1510,7 @@
       </button>                   
    </div>   
       
-   <div class="wrapper center">      
+   <div class="wrapper center2">      
       <h4 class="trn" data-trn-key="or_use_your_email">or use your email address</h4>                         
       <br/>
       
@@ -1800,21 +1942,21 @@
         </ons-list-item>
       </ons-list>
       
-       <div class="settings-header trn" data-trn-key="others">Others</div>
-             
-      
+       <div class="settings-header trn"></div>
+       <div style="display:none;">
+
       <ons-list modifier="inset" class="settings-list">
         <ons-list-item modifier="chevron" onclick="showLocationPopUp();" class="trn" data-trn-key="change_location">
           Change your location
-        </ons-list-item>        
+        </ons-list-item>
       </ons-list>
-      
+
       <ons-list modifier="inset" class="settings-list">
         <ons-list-item modifier="chevron" onclick="showLanguageList();" class="trn" data-trn-key="select_your_language">
           Select your language
-        </ons-list-item>        
+        </ons-list-item>
       </ons-list>
-            
+      </div>     
    
    <button class="button green-btn button--large trn" onclick="saveSettings();" data-trn-key="save">
 	Save
@@ -2730,6 +2872,35 @@
 </ons-page>
 </script>   
 
+<script type="text/ons-template" id="favoritos.html">   
+<ons-navigator title="Navigator" var="sNavigator"> 
+<ons-page id="page-favoritos" on-device-backbutton="backtoHome()" >
+   <ons-toolbar>     
+   
+    <div class="left">
+     <ons-toolbar-button onclick="setHome();">
+        <ons-icon icon="fa-chevron-left"></ons-icon>
+     </ons-toolbar-button>        
+    </div> 
+         
+    <div class="center white"><span id="search-text" class="trn" data-trn-key="browse_resto">Meus Favoritos</span></div>           
+    
+    <div class="right">
+      <ons-toolbar-button><ons-icon icon="fa-search" onclick="showFilterResto();"></ons-toolbar-button>
+    </div>
+        
+   </ons-toolbar>
+   
+   <div class="results-header arrow_box"><span class="result-msg trn" data-trn-key="processing">processando</span></div>
+   
+   <ons-scroller>
+     <ons-list class="restaurant-list"  id="browse-favoritos" >
+     </ons-list>
+   </ons-scroller>
+      
+</ons-page>
+</ons-navigator> 
+</script>
 
 <script type="text/ons-template" id="monerisForm.html">   
 <ons-page id="page-moneris-form">
