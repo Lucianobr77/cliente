@@ -20,9 +20,7 @@
 		
 	<gap:plugin name="cordova-plugin-whitelist" source="npm" />
 	
-    <gap:plugin name="phonegap-plugin-push" source="npm" spec="1.10.5"  >
-      <param name="SENDER_ID" value="" />
-    </gap:plugin>
+    <gap:plugin name="phonegap-plugin-push" source="npm" spec="1.10.5"  /> 
     
                 	
     <gap:plugin name="cordova-plugin-device" source="npm" />		
@@ -36,7 +34,7 @@
 	
 	
 	<gap:plugin name="cordova-plugin-media" source="npm" spec="3.0.0" />	
-	<gap:plugin name="cordova.plugins.diagnostic" source="npm" spec="3.4.2" />	
+	<gap:plugin name="cordova.plugins.diagnostic" source="npm" spec="3.7.1" />	
 	
 	<gap:plugin name="onesignal-cordova-plugin" spec="2.1.1" source="npm" />
 		
@@ -55,15 +53,7 @@
 		
     <platform name="android" />    
     <platform name="ios" /> 
-		
-    <gap:config-file platform="ios" target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
-        <string>O Sou + Food quer sempre usar sua localização</string>
-    </gap:config-file>
-        
-    <gap:config-file platform="ios" target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
-        <string>O Sou + Food quer usar sua localização</string>
-    </gap:config-file>	
-			
+    		    
 	<preference name="AutoHideSplashScreen" value="false" />  	
     <preference name="SplashScreenDelay" value="10000" />    
     <preference name="fullscreen" value="false" />
@@ -80,13 +70,34 @@
     </gap:config-file> 
 	            
     <preference name="phonegap-version" value="cli-7.0.1" />     
-    <gap:plugin name="cordova-plugin-camera" source="npm" spec="2.4.0" />
+    <gap:plugin name="cordova-plugin-camera" source="npm" spec="2.4.1" />
     <gap:plugin name="cordova-plugin-file-transfer" source="npm" spec="1.6.2" /> 
-    <gap:plugin spec="https://github.com/danwilson/google-analytics-plugin.git" source="git" />       
-    
-    <gap:config-file platform="ios" parent="NSPhotoLibraryUsageDescription" overwrite="true"> 
-      <string>O Sou + Food gostaria de acessar suas fotos</string> 
-    </gap:config-file>    
+    <gap:plugin spec="https://github.com/danwilson/google-analytics-plugin.git" source="git" />     
+
+    <platform name="ios">    
+	    <config-file platform="ios" target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
+	        <string>O Sou + Food quer sempre usar sua localização</string>
+	    </config-file>
+	    <config-file platform="ios" target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
+	        <string>O Sou + Food quer usar sua localização</string>
+	    </config-file>
+	</platform>   
+	
+	<edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
+    <string>precisa de acesso à câmera para tirar fotos</string>
+	</edit-config>
+	
+	<edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="merge">
+	    <string>Precisa de acesso à biblioteca de fotos para obter fotos a partir daí</string>
+	</edit-config>
+	
+	<edit-config target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
+	    <string>precisa de acesso à localização para encontrar locais próximos</string>
+	</edit-config>
+	
+	<edit-config target="NSPhotoLibraryAddUsageDescription" file="*-Info.plist" mode="merge">
+	    <string>precisa acessar a biblioteca de fotos para salvar imagens</string>
+	</edit-config>
     
 	<platform name="android">
 		

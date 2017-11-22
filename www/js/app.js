@@ -1,6 +1,6 @@
 /**
 KMRS MOBILE 
-Version 2.1
+Version 2.2
 */
 
 /**
@@ -33,6 +33,8 @@ var global_postal_code;
 var global_filter_params;
 var browse_params;
 var push;
+
+var timer = null;
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -191,7 +193,9 @@ ons.ready(function() {
 		
 	if(isDebug()){
 		removeStorage("default_lang");
-		removeStorage("search_address");	
+		removeStorage("search_address");
+		//setStorage("search_address","970 N Western Ave, Los Angeles, CA, United States");	
+		setStorage("search_address","Guadalupe Nuevo, Makati, NCR, Philippines");		
 	}
 		
 	//navigator.splashscreen.hide()	
@@ -1051,15 +1055,23 @@ function callAjax(action,params)
 		type: 'post',                  
 		async: false,
 		dataType: 'jsonp',
-		timeout: 8000,
+		timeout: 10000,
 		crossDomain: true,
 	 beforeSend: function() {
 		if(ajax_request != null) {			 	
 		   /*abort ajax*/
 		   hideAllModal();	
            ajax_request.abort();
+           clearTimeout(timer);
 		} else {    
-			/*show modal*/			   
+			/*show modal*/			
+
+			timer = setTimeout(function() {
+				hideAllModal();				
+				ajax_request.abort();
+	            toastMsg( getTrans('Request taking lot of time. Please try again','request_taking_lot_time')  );	            
+	        }, 10000);
+			  
 			switch(action)
 			{
 				case "registerMobile":
@@ -2428,6 +2440,7 @@ function callAjax(action,params)
 			    
 			       // set the total search results
 			       setStorage("search_total", data.details.total);
+			       setStorage("search_total_raw", data.details.total_raw);
 			    
 			       var options = {     
 				  	  //address:s,	  	 	  	  
@@ -2441,6 +2454,7 @@ function callAjax(action,params)
 			    
 			    case "initBrowseMerchant":
 			       setStorage("browse_total", data.details.total);			       
+			       setStorage("browse_total_raw", data.details.total_raw);	
 			       menu.setMainPage('browseRestaurant.html', {closeMenu: true});
 			    break;
 			    
@@ -2487,6 +2501,12 @@ function callAjax(action,params)
 			      $(".custompage_title").html(data.details.title);
 			      $(".custom_page_content").html(data.details.content);
 			      setTrackView( data.details.title );
+			    break;
+			    
+			    case "clearMyCart":
+			      cart=[];		       
+		          sNavigator.popPage({cancelIfRunning: true}); //back button
+		          showCartNosOrder();
 			    break;
 			    
 				default:
@@ -2622,6 +2642,12 @@ function callAjax(action,params)
 		}	
 	}
    });       	
+   
+   ajax_request.always(function() {
+       dump( "second complete" );
+       ajax_request=null;  
+       clearTimeout(timer);
+   });
 }
 
 function setHome()
@@ -2776,7 +2802,8 @@ function loadRestaurantCategory(mtid)
    };
    sNavigator.pushPage("menucategory.html", options);
    */ 
-  callAjax("getCategoryCount","mtid="+ mtid );
+    
+  callAjax("getCategoryCount","mtid="+ mtid + "&device_id="+getStorage("device_id") );
 }
 
 function cuisineResults(data)
@@ -2964,9 +2991,12 @@ function displayItemByCategory(data)
 	var actions = '';
 	
 	var html='';
+	html+='<ons-list>';	 
 	//html+='<ons-list class="restaurant-list">';
 	$.each( data.item, function( key, val ) { 		 
-				
+
+		html+= '<ons-list-item>';	
+		
 		 if (data.disabled_ordering==2){
 		 //html+='<ons-list-item modifier="tappable" class="list-item-container" onclick="itemNotAvailable(2)" >';		
 		   actions = "itemNotAvailable(2)";
@@ -3062,9 +3092,9 @@ actions='"loadItemDetails('+ "'"+val.item_id+"'," +  "'"+data.merchant_id+"'," +
          }                 
            
          html+='</ons-row>';
-        //html+='</ons-list-item>';
+        html+='</ons-list-item>';
     });			
-    //html+='</ons-list>';    
+    html+='</ons-list>';    
     
     //createElement('menu-list',html);
     createElement( 'item-results-'+ data.index , html);
@@ -5339,13 +5369,13 @@ function getCurrentLocation()
 				            return;
 				            break;
 				        case cordova.plugins.diagnostic.permissionStatus.GRANTED:
-				            toastMsg("Permission granted always");		 		            
+				            //toastMsg("Permission granted always");		 		            
 				            cordova.plugins.locationAccuracy.request(
 			                onRequestSuccess, onRequestFailure, cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
 				                       
 				            break;
 				        case cordova.plugins.diagnostic.permissionStatus.GRANTED_WHEN_IN_USE:
-				            toastMsg("Permission granted only when in use");		            		            		            
+				            //toastMsg("Permission granted only when in use");
 				            cordova.plugins.locationAccuracy.request(
 			                onRequestSuccess, onRequestFailure, cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
 			                
@@ -6277,10 +6307,10 @@ function imageLoaded(div_id)
 {	
 	$(div_id).imagesLoaded()
 	  .always( function( instance ) {
-	    console.log('all images loaded');
+	    //console.log('all images loaded');
 	  })
 	  .done( function( instance ) {
-	    console.log('all images successfully loaded');
+	    //console.log('all images successfully loaded');
 	  })
 	  .fail( function() {
 	    console.log('all images loaded, at least one is broken');
@@ -6288,7 +6318,7 @@ function imageLoaded(div_id)
 	  .progress( function( instance, image ) {
 	    var result = image.isLoaded ? 'loaded' : 'broken';	    	   
 	    image.img.parentNode.className = image.isLoaded ? '' : 'is-broken';
-	    console.log( 'image is ' + result + ' for ' + image.img.src );	    
+	    //console.log( 'image is ' + result + ' for ' + image.img.src );	    
 	});
 }
 
@@ -6346,8 +6376,8 @@ function toastMsg( message )
 function isDebug()
 {	
 	//on/off
-	return true;
-	//return false;
+	//return true;
+	return false;
 }
 
 var rzr_successCallback = function(payment_id) {
@@ -6541,14 +6571,14 @@ function checkGPS()
 				            return;
 				            break;
 				        case cordova.plugins.diagnostic.permissionStatus.GRANTED:
-				            toastMsg("Permission granted always");		 
+				            //toastMsg("Permission granted always");		 
 				            
 				            cordova.plugins.locationAccuracy.request( onRequestSuccessMap, 
 			                onRequestFailureMap, cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
 				                       
 				            break;
 				        case cordova.plugins.diagnostic.permissionStatus.GRANTED_WHEN_IN_USE:
-				            toastMsg("Permission granted only when in use");		            		            
+				            //toastMsg("Permission granted only when in use");		            		            
 				            
 				            cordova.plugins.locationAccuracy.request( onRequestSuccessMap, 
 			                onRequestFailureMap, cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
@@ -6624,8 +6654,8 @@ function viewTaskMapInit()
 	merchant_latitude = getStorage("merchant_latitude");
 	merchant_longtitude = getStorage("merchant_longtitude");
 	
-	//alert('viewTaskMapInit');	
-	/*alert( merchant_latitude );
+	/*alert('viewTaskMapInit');	
+	alert( merchant_latitude );
 	alert( merchant_longtitude );	*/
 	
 	google_lat = new plugin.google.maps.LatLng( merchant_latitude , merchant_longtitude );
@@ -6678,21 +6708,12 @@ function onMapInit()
 	    	 var your_location = new plugin.google.maps.LatLng(position.coords.latitude , position.coords.longitude); 	
 	    	 	    	 
 	    	 var destination = new plugin.google.maps.LatLng( merchant_latitude , merchant_longtitude );
-	    	 
-	    	  map.addPolyline({
-			    points: [
-			      destination,
-			      your_location
-			    ],
-			    'color' : '#AA00FF',
-			    'width': 10,
-			    'geodesic': true
-			   }, function(polyline) {
-			   	
-			   	  map.animateCamera({
-					  'target': your_location,
-					  'zoom': 17,
-					  'tilt': 30
+	    	 	    	 
+	    	 if ( iOSeleven() ){	    	 	
+	    	 	 map.animateCamera({
+				  'target': your_location,
+				  'zoom': 17,
+				  'tilt': 30
 					}, function() {
 						
 					   var data = [      
@@ -6712,9 +6733,46 @@ function onMapInit()
 					   });
 						
 				   });  
-				   
-			   });   
-	    	 // end position success
+	    	 	
+	    	 } else {	    	      
+		    	  map.addPolyline({
+				    points: [
+				      destination,
+				      your_location
+				    ],
+				    'color' : '#AA00FF',
+				    'width': 10,
+				    'geodesic': true
+				   }, function(polyline) {
+				   	
+				   	  
+				   	  map.animateCamera({
+						  'target': your_location,
+						  'zoom': 17,
+						  'tilt': 30
+						}, function() {
+							
+						   var data = [      
+					          {
+					            'title': getTrans('You are here','you_are_here'), 
+					            'position': your_location ,
+					            'icon': {
+								    'url': getStorage("from_icon")
+								  }			  				  
+					          }  
+					       ];
+					       
+					       hideAllModal();
+					   
+						   addMarkers(data, function(markers) {
+						    markers[markers.length - 1].showInfoWindow();
+						   });
+							
+					   });  
+					   
+				   });   
+		    	 // end polyline
+	    	 }
 	    	 
 	      }, function(error){
 	      	 hideAllModal();
@@ -7436,48 +7494,71 @@ function MapInit_Track()
 		    		    		    
 		    addMarkers(data, function(markers) {    
 		    	
-		    	map.addPolyline({
-				points: [
-				  driver_location,
-				  dropoff_location
-				],
-				'color' : '#AA00FF',
-				'width': 10,
-				'geodesic': true
-				}, function(polyline) {
-				   
-					map.animateCamera({
-					  'target': dropoff_location,
-					  'zoom': 17,
-					  'tilt': 30
-					}, function() {
-						
-		                map.addPolyline({
-						points: [
-						  dropoff_location,
-						  destination
-						],
-						'color' : '#AA00FF',
-						'width': 10,
-						'geodesic': true
-						}, function(polyline) {
-						   						
-							map.animateCamera({
-							  'target': destination,
-							  'zoom': 17,
-							  'tilt': 30
-							}, function() {			
-								
-								stopTrackMapInterval();
-      	                        track_order_map_interval = setInterval(function(){runTrackMap()}, 10000);
-													
-							}); /*end animate*/
-								
-						});  /*end polyline*/
-						
+		    	if ( iOSeleven() ){		    		
+		    		map.animateCamera({
+						  'target': dropoff_location,
+						  'zoom': 17,
+						  'tilt': 30
+					}, function() {			
+									
+						map.animateCamera({
+						  'target': destination,
+						  'zoom': 17,
+						  'tilt': 30
+						}, function() {			
+							
+							stopTrackMapInterval();
+  	                        track_order_map_interval = setInterval(function(){runTrackMap()}, 10000);
+												
+						}); /*end animate*/		
+									
 					}); /*end animate*/
+		    		
+		    	} else {		    	
+			    	map.addPolyline({
+					points: [
+					  driver_location,
+					  dropoff_location
+					],
+					'color' : '#AA00FF',
+					'width': 10,
+					'geodesic': true
+					}, function(polyline) {
+					   
+						map.animateCamera({
+						  'target': dropoff_location,
+						  'zoom': 17,
+						  'tilt': 30
+						}, function() {
+							
+			                map.addPolyline({
+							points: [
+							  dropoff_location,
+							  destination
+							],
+							'color' : '#AA00FF',
+							'width': 10,
+							'geodesic': true
+							}, function(polyline) {
+							   						
+								map.animateCamera({
+								  'target': destination,
+								  'zoom': 17,
+								  'tilt': 30
+								}, function() {			
+									
+									stopTrackMapInterval();
+	      	                        track_order_map_interval = setInterval(function(){runTrackMap()}, 10000);
+														
+								}); /*end animate*/
+									
+							});  /*end polyline*/
+							
+						}); /*end animate*/
+						
+					});  /*end polyline*/
 					
-				});  /*end polyline*/
+		    	}
 		    	  								    		
 	        });/* end marker*/
 		 	
@@ -7777,29 +7858,33 @@ function reInitTrackMap(data)
 	    
 	    addMarkers(data, function(markers) {       
 	    	
-	    	map.addPolyline({
-			points: [
-			  driver_location,
-			  dropoff_location
-			],
-			'color' : '#AA00FF',
-			'width': 10,
-			'geodesic': true
-			}, function(polyline) {
-			   
-				map.addPolyline({
+	    	if ( iOSeleven() ){
+	    		// do nothing
+	    	} else {
+		    	map.addPolyline({
 				points: [
-				  dropoff_location,
-				  destination
+				  driver_location,
+				  dropoff_location
 				],
 				'color' : '#AA00FF',
 				'width': 10,
 				'geodesic': true
 				}, function(polyline) {
 				   
-				}); /*end polyline*/
-				
-			}); /*end polyline*/
+					map.addPolyline({
+					points: [
+					  dropoff_location,
+					  destination
+					],
+					'color' : '#AA00FF',
+					'width': 10,
+					'geodesic': true
+					}, function(polyline) {
+					   
+					}); /*end polyline*/
+					
+				}); /*end polyline*/			
+	    	}
 	    	
 	    });
 	   
@@ -8392,9 +8477,14 @@ function showShippingLocation(data)
       	  	 
       	  	 $(".location_state").html( data.msg.state_info.state_name );
       	  	 $(".state_id").html( data.msg.state_info.state_id );
+      	  	 
+      	  	 $(".state").val( data.msg.state_info.state_name );
       	  }
       	  if(!empty(data.details.contact_phone)){
       	  	$(".contact_phone").val( data.details.contact_phone ) ;      	  	
+      	  }
+      	  if(!empty(global_area_name)){
+      	  	 $(".area_name").val( global_area_name );
       	  }
       } 
     };   
@@ -8517,9 +8607,9 @@ var spinner='<div class="spinner"><div class="bounce1"></div><div class="bounce2
 var lazyLoadSearch = {
   createItemContent: function(index, oldContent) {      	
   	
-  	search_total = getStorage("search_total");
+  	search_total = getStorage("search_total_raw");
   	if(!empty(search_total)){
-  		$(".result-msg").text(getTrans("Restaurant found",'restaurant_found') );
+  		$(".result-msg").text(search_total+" "+getTrans("Restaurant found",'restaurant_found') );
   	}  	  	
     var $element = $('<div id="results-'+index+'">'+spinner+'</div>');     
     getSearchMerchant(index);   
@@ -8588,7 +8678,7 @@ function getSearchMerchant(index)
 		type: 'post',                  
 		async: false,
 		dataType: 'jsonp',
-		timeout: 6000,
+		timeout: 8000,
 		crossDomain: true,
 	 beforeSend: function() {			 	
 	},
@@ -8619,7 +8709,7 @@ function initBrowseMerchant()
 var lazyBrowseMerchant = {
   createItemContent: function(index, oldContent) {      	
   	
-  	search_total = getStorage("browse_total");
+  	search_total = getStorage("browse_total_raw");
   	if(!empty(search_total)){
   		$(".result-msg").text(search_total+" "+getTrans("Restaurant found",'restaurant_found') );
   	}  	  	
@@ -8654,7 +8744,7 @@ function getBrowseMerchant(index)
 		params+="&api_key="+krms_config.APIHasKey;
 	}
 		
-	dump(ajax_url+"/"+action+"?"+params);	
+	dump("getBrowseMerchant=>"+ ajax_url+"/"+action+"?"+params);	
 	
 	 ajax_lazy = $.ajax({
 		url: ajax_url+"/"+action, 
@@ -8662,7 +8752,7 @@ function getBrowseMerchant(index)
 		type: 'post',                  
 		async: false,
 		dataType: 'jsonp',
-		timeout: 6000,
+		timeout: 8000,
 		crossDomain: true,
 	 beforeSend: function() {			 	
 	},
@@ -8693,8 +8783,15 @@ function clearCart()
 	  cancelable: true,
 	  callback: function(index) {	    
 	    if ( index==0){
-	       cart=[];
-	       showCart();
+	     	
+	       if (saveCartToDb()){
+	       	  callAjax("clearMyCart", "&device_id="+ encodeURIComponent(getStorage("device_id")) );
+	       } else {
+	       	   //showCart();
+		       cart=[];		       
+		       sNavigator.popPage({cancelIfRunning: true}); //back button
+		       showCartNosOrder();
+	       }
 	    }
 	  }
 	});	
@@ -8793,21 +8890,29 @@ function getCategory(index)
 		type: 'post',                  
 		async: false,
 		dataType: 'jsonp',
-		timeout: 6000,
+		timeout: 8000,
 		crossDomain: true,
 	 beforeSend: function() {			 	
 	},
 	complete: function(data) {							
 	},
-	success: function (data) {	  	   
-	   if (data.code=1){	   		   	      	  
+	success: function (data) {		   
+	   if (data.code=1){	   	
+	   	   html='';
+	   	   html+='<ons-list>';	   	      	  
 	   	   $.each( data.details, function( key, val ) {
-	   	   	   html = '<ons-row onclick="loadmenu('+val.cat_id+','+val.merchant_id+');" >';
-	   	   	   html+= val.category_name;
-	   	   	   //html+= '<p>'+val.category_description+'</p>';
-	   	   	   html+= '</ons-row>';	   	   	   
-	   	   	   createElement( 'foodcategory-results-'+index, html);
-	   	   });
+			   if (val.photo!=""){
+	   	   	   html+= '<ons-list-item onclick="loadmenu('+val.cat_id+','+val.merchant_id+');"><img src="https://www.soumaisfood.com.br/upload/'+val.photo+'" class="imgcategoria"></img> '+val.category_name+'</ons-list-item>';
+			   } else {
+				htm+= '<ons-list-item onclick="loadmenu('+val.cat_id+','+val.merchant_id+');"><img src="https://www.soumaisfood.com.br/protected/modules/mobileappnovo/assets/images/mobile-default-logo.png" class="imgcategoria"></img>'+val.category_name+'</ons-list-item>';
+			    }
+			 //html+= '<ons-row>';
+		   	   	   //html+= val.category_name;	   	   	   
+		   	   	   //html+= '</ons-row>';	   	
+	   	   	   html+= '</ons-list-item>';
+	   	   });	   	   
+	   	   html+='</ons-list>';
+	   	   createElement( 'foodcategory-results-'+index, html);
 	   } else {	   	  
 	   	  $("#foodcategory-results-"+index).html(data.msg);
 	   }
@@ -8861,7 +8966,7 @@ function getItem(index)
 		type: 'post',                  
 		async: false,
 		dataType: 'jsonp',
-		timeout: 6000,
+		timeout: 8000,
 		crossDomain: true,
 	beforeSend: function() {			 	
 	},
@@ -9050,4 +9155,15 @@ function setTrackView(pagename , campaign_details )
 	   	  }
    	  }
    }
+}
+
+function iOSeleven()
+{	
+	if ( device.platform =="iOS"){	
+		version = parseFloat(device.version);		
+		if ( version>=11 ){
+			return true;
+		}
+	}
+	return false;
 }

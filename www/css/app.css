@@ -1295,3 +1295,19 @@ margin-left: 100px;
 color: #4a4848;
 font-size: 13px;
 }
+
+.notification.finalizado{
+background:#31708f;
+}
+
+.notification.cancelado{
+background:#dc1e1e;
+}
+
+.notification.decline{
+background:#dc1e1e;
+}
+
+.notification.retirar{
+background:#2c9f2c;
+}
