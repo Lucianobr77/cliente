@@ -36,6 +36,8 @@ var push;
 
 var timer = null;
 
+var logotipo=getStorage("merchant_logo");
+
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
@@ -6376,8 +6378,8 @@ function toastMsg( message )
 function isDebug()
 {	
 	//on/off
-	//return true;
-	return false;
+	return true;
+	//return false;
 }
 
 var rzr_successCallback = function(payment_id) {
@@ -8901,16 +8903,26 @@ function getCategory(index)
 	   	   html='';
 	   	   html+='<ons-list>';	   	      	  
 	   	   $.each( data.details, function( key, val ) {
+			   	   	
+	html+='<ons-list-item onclick="loadmenu('+val.cat_id+','+val.merchant_id+');">';
+
+		var upload_url = krms_config.UploadUrl;
+	    dump("upload_url=>"+upload_url); 
+			   
 			   if (val.photo!=""){
-	   	   	   html+= '<ons-list-item onclick="loadmenu('+val.cat_id+','+val.merchant_id+');"><img src="https://www.soumaisfood.com.br/upload/'+val.photo+'" class="imgcategoria"></img> '+val.category_name+'</ons-list-item>';
+			html+='<img src="https://www.soumaisfood.com.br/upload/'+val.photo+'" class="imgcategoria">';
+			html+='</img>';
+			  html+=val.category_name;
 			   } else {
-				htm+= '<ons-list-item onclick="loadmenu('+val.cat_id+','+val.merchant_id+');"><img src="https://www.soumaisfood.com.br/protected/modules/mobileappnovo/assets/images/mobile-default-logo.png" class="imgcategoria"></img>'+val.category_name+'</ons-list-item>';
-			    }
+			html+='<img src="https://www.soumaisfood.com.br/protected/modules/mobileapp/assets/images/mobile-default-logo.png" class="imgcategoria">';
+			html+='</img>';
+			  html+=val.category_name;
+			}
 			 //html+= '<ons-row>';
 		   	   	   //html+= val.category_name;	   	   	   
 		   	   	   //html+= '</ons-row>';	   	
 	   	   	   html+= '</ons-list-item>';
-	   	   });	   	   
+	   	   });
 	   	   html+='</ons-list>';
 	   	   createElement( 'foodcategory-results-'+index, html);
 	   } else {	   	  

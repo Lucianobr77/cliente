@@ -10,7 +10,7 @@ alert("Você deve estar logado para adicionar um favorito");
 	
  $.ajax({
     type:"GET",
-    url:"http://nossopedido.com.br/mobileapp/api/AddFavorito?client_token="+getStorage("client_token")+"&merchant_id="+getStorage('merchant_id')+"",
+    url:"https://soumaisfood.com.br/mobileappnovo/api/AddFavorito?client_token="+getStorage("client_token")+"&merchant_id="+getStorage('merchant_id')+"",
 	data: { get_param: 'icone' }, 
 	dataType: 'jsonp',
     success: function(data) {
@@ -47,7 +47,7 @@ callAjax('VerificaFavorito',"client_token="+getStorage("client_token")+"&merchan
 
 $.ajax({
     type:"GET",
-    url:"http://nossopedido.com.br/mobileapp/api/VerificaFavorito?client_token="+getStorage("client_token")+"&merchant_id="+getStorage('merchant_id')+"",
+    url:"https://soumaisfood.com.br/mobileappnovo/api/VerificaFavorito?client_token="+getStorage("client_token")+"&merchant_id="+getStorage('merchant_id')+"",
 	data: { get_param: 'icone' }, 
 	dataType: 'jsonp',
     success: function(data) {
@@ -97,6 +97,7 @@ function displayFavoritosResults(data , target_id)
     	     
     	     htm+='<ons-col class="col-description border" width="65%">';
     	           htm+='<div>';
+		               htm+='<span class="notification '+val.tag_raw+' ">'+val.is_open+'</span>';
 	    	           htm+='<div class="rating-stars" data-score="'+val.ratings.ratings+'"></div>';
 	    	           htm+='<p class="restauran-title concat-text">'+val.restaurant_name+'</p>';
 	    	           htm+='<p class="concat-text">'+val.cuisine+'</p>';
@@ -109,7 +110,7 @@ function displayFavoritosResults(data , target_id)
     	           	   });
     	          }
 					  
-	    	           htm+='<span class="notification '+val.tag_raw+' ">'+val.is_open+'</span>';
+	    	          
     	           htm+='</div>';
     	           
     	           
