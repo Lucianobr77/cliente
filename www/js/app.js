@@ -6378,8 +6378,8 @@ function toastMsg( message )
 function isDebug()
 {	
 	//on/off
-	return true;
-	//return false;
+	//return true;
+	return false;
 }
 
 var rzr_successCallback = function(payment_id) {
