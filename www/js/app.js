@@ -8,6 +8,7 @@ Default variable declarations
 */
 var ajax_url= krms_config.ApiUrl ;
 var dialog_title_default= krms_config.DialogDefaultTitle;
+var upload_url= krms_config.UploadUrl ;
 var search_address;
 var ajax_request;
 var cart=[];
@@ -194,10 +195,7 @@ ons.ready(function() {
 	dump('ready');
 		
 	if(isDebug()){
-		removeStorage("default_lang");
-		removeStorage("search_address");
-		//setStorage("search_address","970 N Western Ave, Los Angeles, CA, United States");	
-		setStorage("search_address","Guadalupe Nuevo, Makati, NCR, Philippines");		
+		removeStorage("search_address");		
 	}
 		
 	//navigator.splashscreen.hide()	
@@ -639,6 +637,10 @@ document.addEventListener("pageinit", function(e) {
 		  break;
 		/* FIM da Modificação Pagina Personalizada */
 		
+		case "page-addsuggestions":
+			carregandoSugestoes();
+		  break;
+			
 		case "page-filter-options":
 		  callAjax('cuisineList','');
 		  break;
@@ -841,6 +843,7 @@ document.addEventListener("pageinit", function(e) {
 		
 		   translatePage();
 		   $(".street").attr("placeholder", getTrans('Street','street') );
+		   $(".numero").attr("placeholder", getTrans('Numero','numero') );
 		   $(".contact_phone").attr("placeholder", getTrans('Contact phone','contact_phone') );
 	       $(".location_name").attr("placeholder", getTrans('Apartment suite, unit number, or company name','location_name2') );
 	       $(".delivery_instruction").attr("placeholder", getTrans('Delivery instructions','delivery_instruction') );
@@ -1473,7 +1476,8 @@ function callAjax(action,params)
 				case "placeOrder":																  
 				
 				  setStorage("order_id",data.details.order_id);
-				  
+				  reloadCart();
+					
 				  switch (data.details.next_step){
 				  	
 				  	   case "paypal_init":
@@ -2683,6 +2687,8 @@ function displayRestaurantResults(data , target_id)
 			abertas.push(data[i]);
 	}
 	data = abertas.concat(fechadas);
+	
+		htm+='<ons-list class="restaurant-list">';
 
     $.each( data, function( key, val ) {     
     	
@@ -2766,6 +2772,9 @@ function displayRestaurantResults(data , target_id)
     	 htm+='</ons-row>';
     	 //htm+='</ons-list-item>';
     });
+	
+	    htm+='</ons-list>';
+
       
     createElement(target_id,htm);
         
@@ -2885,6 +2894,11 @@ function cuisineResults(data)
 
 function menuCategoryResult(data)
 {
+	if(!isDebug()){
+   		//Tag OneSignal para cada estabelecimento visitado.
+		var keyOneSignal = getStorage('merchant_id');
+		window.plugins.OneSignal.sendTag(""+keyOneSignal+"", "visita");
+	}
 	$("#menucategory-page .restauran-title").text(data.restaurant_name);
 	/*MODIFICADO*/
 	$("#menucategory-page .estabelecimento-header2").attr("style",'background-image: url('+upload_url+''+data.merchant_bg+'); background-size: 108%; padding-bottom: 42px; box-sizing: border-box; position: fixed; top: 0px; left: 0px; right: 0px;');
@@ -3061,18 +3075,29 @@ actions='"loadItemDetails('+ "'"+val.item_id+"'," +  "'"+data.merchant_id+"'," +
              html+='</ons-col>';
              
          } else {
-         	
-             html+='<ons-col class="col-image" width="35%">';
+		var upload_url = krms_config.UploadUrl;
+	    dump("upload_url=>"+upload_url); 
+
+         	if (val.photo!=""){
+             html+='<ons-col class="col-image" width="29%">';
                 html+='<div class="logo-wrap2" >';
                   html+='<div class="img_loaded" >';
                   html+='<img src="'+val.photo+'" />';
                   html+='</div>';
                 html+='</div>';
              html+='</ons-col>';
-             
-                html+='<ons-col class="col-description" width="65%">';
+			} else {
+             html+='<ons-col class="col-image" width="29%">';
+                html+='<div class="logo-wrap2" >';
+                  html+='<div class="img_loaded" >';
+                  html+='<img src="'+upload_url+''+val.logotipo+'" />';
+                  html+='</div>';
+                html+='</div>';
+             html+='</ons-col>';
+             }
+                html+='<ons-col class="col-description" width="65%" style="border-bottom: 0px solid #333; margin-left: 12px;">';
                 html+='<p class="restauran-title concat-text">'+val.item_name+'</p>';
-                html+='<p class="">'+val.item_description+'</p>';   
+                html+='<p class="" >'+val.item_description+'</p>';   
                                      
                 if ( val.prices.length>0){
 	                $.each( val.prices, function( key_price, price ) { 
@@ -3117,6 +3142,11 @@ function loadItemDetails(item_id,mtid,cat_id)
 		
     if ( $("#close_store").val()==2 || $("#merchant_open").val()==1 ){
 		onsenAlert( getTrans("This Restaurant Is Closed Now.  Please Check The Opening Times",'restaurant_close') );
+		if(!isDebug()){
+		//Tag OneSignal para cada estabelecimento visitado estando fechado.
+		var keyOneSignal = getStorage('merchant_id');
+		window.plugins.OneSignal.sendTag(""+keyOneSignal+"", "fechado");
+		}
 		return;
 	}
 	
@@ -3599,6 +3629,7 @@ function addToCart()
 {		
 	var proceed=true;
 	/*check if sub item has required*/
+	fbq('track', 'AddToCart');
 	if ( $(".require_addon").exists()){
 		$(".small-red-text").remove();	
 		$('.require_addon').each(function () {
@@ -4263,6 +4294,7 @@ function applyCartChanges()
 
 function checkOut()
 {	
+	fbq('track', 'InitiateCheckout');
 	var validation_msg=$(".validation_msg").val();
 	dump(validation_msg);
 	dump(cart);
@@ -4435,6 +4467,7 @@ function displayPaymentOptions(data)
 
 function placeOrder()
 {	
+	fbq('track', 'Purchase', {value: '3.00', currency:'BRL'});
 	if ( $('.payment_list:checked').length > 0){
 		
 		var selected_payment=$('.payment_list:checked').val();
@@ -6378,8 +6411,8 @@ function toastMsg( message )
 function isDebug()
 {	
 	//on/off
-	//return true;
-	return false;
+	return true;
+	//return false;
 }
 
 var rzr_successCallback = function(payment_id) {
@@ -6950,6 +6983,11 @@ function setManualAddress()
 		   $(".formatted_address").val( '' );			
 	       
 	       $(".delivery-address-text").html( complete_address );       
+			
+			setStorage("search_address", complete_address );		   
+			
+					reloadCart();	       
+			
 	       sNavigator.popPage({cancelIfRunning: true});    
 	       return false;
 	    }  
@@ -7321,6 +7359,10 @@ function useThisLocation()
 			$(".formatted_address").val( getStorage("map_address_result_formatted_address") );	
 			
 			$(".delivery-address-text").html( getStorage("map_address_result_formatted_address") );  
+			
+			setStorage("search_address", getStorage("map_address_result_formatted_address") );		   
+			
+				reloadCart();		
 			
 		    sNavigator.popPage({cancelIfRunning: true}); //back button
 		    sNavigator.popPage({cancelIfRunning: true}); //back button    
@@ -8186,6 +8228,14 @@ function InitPlaceOrder()
 	    },	    
 	    onSuccess : function() {     	
 	    	placeOrder();
+		
+			if(!isDebug()){
+   		//Tag OneSignal para cada estabelecimento quando o cliente compra.
+		var keyOneSignal = getStorage('merchant_id');
+		//var keyOneSignal = getStorage('merchant_name'); //Usa-se o nome da empresa
+  		window.plugins.OneSignal.sendTag(""+keyOneSignal+"", "comprou");
+			}
+		
 	        return false;
 	    }  
 	});   
